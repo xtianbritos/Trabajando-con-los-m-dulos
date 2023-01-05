@@ -41,7 +41,7 @@ export class UsersController {
   }
 
   @Get('user')
-  getUser(): Usuario[] {
+  getUsers(): Usuario[] {
     return usuarios;
   }
 
