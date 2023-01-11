@@ -1,100 +1,48 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Put } from '@nestjs/common';
-import { randomUUID } from 'crypto';
+import { Body, Controller, Delete, Get, HttpStatus, Param, ParseUUIDPipe, Patch, Post, Put } from '@nestjs/common';
+import { HttpCode } from '@nestjs/common/decorators';
+import { STATUS_CODES } from 'http';
+import { GetUserDto } from '../dtos/getuser.dto';
+import { PatchUserDto } from '../dtos/patchuser.dto';
+import { PostUserDto } from '../dtos/postuser.dto';
 import { UsersService } from '../service/users.service';
-
-export class Usuario {
-  uuid: string;
-  nombre: string;
-  apellido: string;
-  email: string;
-}
-
-let usuarios: Usuario[]= [
-  {
-    uuid: '0',
-    nombre: 'Pepe',
-    apellido: 'Gomez',
-    email: 'pepe@gmail.com'
-  },
-  {
-    uuid: '1',
-    nombre: 'Martín',
-    apellido: 'Gomez',
-    email: 'martin@gmail.com'
-  },
-  {
-    uuid: '2',
-    nombre: 'Chris',
-    apellido: 'Gomez',
-    email: 'chris@gmail.com'
-  }
-]
-
 
 @Controller('users')
 export class UsersController {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(private readonly service: UsersService) {}
 
   @Get('message')
   getHello(): string {
-    return this.usersService.getHello();
+    return this.service.getHello();
   }
 
   @Get('user')
-  getUsers(): Usuario[] {
-    return usuarios;
+  getUsers(): GetUserDto[] {
+    return this.service.get();
   }
 
   @Get('user/:uuid')
-  getUserByUuid(@Param('uuid') id: string): Usuario {
-    let index: number = usuarios.findIndex(u => u.uuid == id);
-
-    return usuarios[index];
+  getUser(@Param('uuid', new ParseUUIDPipe()) uuid: string): GetUserDto {
+    return this.service.getUser(uuid);
   }
 
   @Post('user')
-  postUser(@Body() body:Usuario): Usuario {
-    body.uuid = randomUUID();
-    usuarios.push(body);
-    return body;
+  PostUser(@Body() body: PostUserDto): GetUserDto {
+    return this.service.post(body);
   }
 
   @Put('user/:uuid')
-  putUser(@Param('uuid') id: string, @Body() body: Usuario): Usuario {
-    let index: number = usuarios.findIndex(u => u.uuid == id);
-    
-    usuarios[index].nombre = body.nombre;
-    usuarios[index].apellido = body.apellido;
-    usuarios[index].email = body.email;
-
-    return usuarios[index];
+  PutUser(@Param('uuid', new ParseUUIDPipe()) uuid: string, @Body() body: PostUserDto): GetUserDto {
+    return this.service.put(uuid, body);
   }
 
   @Patch('user/:uuid')
-  patchUser(@Param('uuid') id: string, @Body() body: Usuario): Usuario {
-    let index: number = usuarios.findIndex(u => u.uuid == id);
-
-    if(body.nombre != null) {
-      usuarios[index].nombre = body.nombre;
-    }
-    if(body.apellido != null) {
-      usuarios[index].apellido = body.apellido;
-    }
-    if(body.email != null){
-      usuarios[index].email = body.email;
-    }
-
-    return usuarios[index];
+  PatchUser(@Param('uuid', new ParseUUIDPipe()) uuid: string, @Body() body: PatchUserDto): GetUserDto {
+    return this.service.patch(uuid, body);
   }
 
-  @Delete('user/:id')
-  deleteUser(@Param('id') id: string): boolean {
-    let index: number = usuarios.findIndex(u => u.uuid == id);
-
-    if(index != -1) {
-      usuarios.splice(index, 1);
-      return true;
-    }
-    return false;
+  @Delete('user/:uuid')
+  @HttpCode(HttpStatus.NO_CONTENT)
+  DeleteUSer(@Param('uuid', new ParseUUIDPipe()) uuid: string): void {
+    this.service.delete(uuid);
   }
 }
