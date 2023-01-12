@@ -4,36 +4,39 @@ import { GetUserDto } from '../dtos/getuser.dto';
 import { PatchUserDto } from '../dtos/patchuser.dto';
 import { PostUserDto } from '../dtos/postuser.dto';
 import { PutUserDto } from '../dtos/putuser.dto';
+import { UserInterface } from '../interfaces/user.interface';
 
-let users: GetUserDto[] = [
-  {
-    uuid: uuid(),
-    name: "Christian",
-    email: "chbritos@gmail.com"
-  },
-  {
-    uuid: uuid(),
-    name: "Manuel",
-    lastName: "Merello",
-    email: "manu@gmail.com"
-  }
-]
 
 @Injectable()
 export class UsersService {
+
+  private users: UserInterface[] = [
+    {
+      uuid: uuid(),
+      name: "Christian",
+      email: "chbritos@gmail.com"
+    },
+    {
+      uuid: uuid(),
+      name: "Manuel",
+      lastName: "Merello",
+      email: "manu@gmail.com"
+    }
+  ]
+
   getHello(): string {
     return 'Hola desde el servicio de Users';
   }
 
   get(): GetUserDto[] {
-    return users;
+    return this.users;
   }
 
   getUser(uuid: string): GetUserDto {
-    let index: number = users.findIndex(u => u.uuid == uuid.toString());
+    let index: number = this.users.findIndex(u => u.uuid == uuid.toString());
 
     if(index != -1) {
-      return users[index];
+      return this.users[index];
     }
     else {
       throw new HttpException(`No existe el usuario con el uuid: ${uuid}`, HttpStatus.NOT_FOUND);
@@ -48,20 +51,20 @@ export class UsersService {
       user.lastName = undefined;
     }
 
-    users.push(user);
+    this.users.push(user);
 
     return user;
   }
 
   put(uuid: string, body: PutUserDto): GetUserDto {
-    let index: number = users.findIndex(u => u.uuid == uuid.toString());
+    let index: number = this.users.findIndex(u => u.uuid == uuid.toString());
 
     if(index != -1) {
       body.uuid = uuid;
   
-      users[index] = body;
+      this.users[index] = body;
   
-      return users[index];
+      return this.users[index];
     }
     else {
       throw new HttpException(`No existe el usuario con el uuid: ${uuid}`, HttpStatus.NOT_FOUND);
@@ -69,20 +72,20 @@ export class UsersService {
   }
 
   patch(uuid: string, body: PatchUserDto): GetUserDto {
-    let index: number = users.findIndex(u => u.uuid == uuid.toString());
+    let index: number = this.users.findIndex(u => u.uuid == uuid.toString());
 
     if(index != -1) {
       if(body.name != null) {
-        users[index].name = body.name;
+        this.users[index].name = body.name;
       }
       if(body.lastName != null) {
-        users[index].lastName = body.lastName;
+        this.users[index].lastName = body.lastName;
       }
       if(body.email != null) {
-        users[index].email = body.email;
+        this.users[index].email = body.email;
       }
   
-      return users[index];
+      return this.users[index];
     }
     else {
       throw new HttpException(`No existe el usuario con el uuid: ${uuid}`, HttpStatus.NOT_FOUND);
@@ -90,10 +93,10 @@ export class UsersService {
   }
 
   delete(uuid: string): void {
-    let index: number = users.findIndex(u => u.uuid == uuid.toString());
+    let index: number = this.users.findIndex(u => u.uuid == uuid.toString());
 
     if(index != -1) {
-      users.splice(index, 1);
+      this.users.splice(index, 1);
     }
     else {
       throw new HttpException(`No existe el usuario con el uuid: ${uuid}`, HttpStatus.NOT_FOUND);
