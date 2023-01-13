@@ -6,7 +6,6 @@ import { PostUserDto } from '../dtos/postuser.dto';
 import { PutUserDto } from '../dtos/putuser.dto';
 import { UserInterface } from '../interfaces/user.interface';
 
-
 @Injectable()
 export class UsersService {
 
@@ -46,10 +45,6 @@ export class UsersService {
 
   post(user: PostUserDto): GetUserDto {
     user.uuid = uuid();
-
-    if(user.lastName == null) {
-      user.lastName = undefined;
-    }
 
     this.users.push(user);
 
