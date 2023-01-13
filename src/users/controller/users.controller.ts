@@ -7,7 +7,6 @@ import { PutUserDto } from '../dtos/putuser.dto';
 import { AuthGuard } from '../guards/auth.guard';
 import { UsersService } from '../service/users.service';
 import { UsersInterceptor } from '../interceptors/users.interceptor';
-import { UserInterceptor } from '../interceptors/user.interceptor';
 
 @Controller('users')
 export class UsersController {
@@ -24,27 +23,27 @@ export class UsersController {
     return this.service.get();
   }
   
-  @UseInterceptors(UserInterceptor)
+  @UseInterceptors(UsersInterceptor)
   @Get('user/:uuid')
   getUser(@Param('uuid', new ParseUUIDPipe()) uuid: string): GetUserDto {
     return this.service.getUser(uuid);
   }
   
-  @UseInterceptors(UserInterceptor)
+  @UseInterceptors(UsersInterceptor)
   @UseGuards(AuthGuard)
   @Post('user')
   PostUser(@Body() body: PostUserDto): GetUserDto {
     return this.service.post(body);
   }
 
-  @UseInterceptors(UserInterceptor)
+  @UseInterceptors(UsersInterceptor)
   @UseGuards(AuthGuard)
   @Put('user/:uuid')
   PutUser(@Param('uuid', new ParseUUIDPipe()) uuid: string, @Body() body: PutUserDto): GetUserDto {
     return this.service.put(uuid, body);
   }
 
-  @UseInterceptors(UserInterceptor)
+  @UseInterceptors(UsersInterceptor)
   @UseGuards(AuthGuard)
   @Patch('user/:uuid')
   PatchUser(@Param('uuid', new ParseUUIDPipe()) uuid: string, @Body() body: PatchUserDto): GetUserDto {
